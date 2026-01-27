@@ -1,0 +1,23 @@
+{
+  "id": "physics",
+  "name": "Physics",
+  "description": "Physics application - pending PRD specifications",
+  "version": "0.1.0",
+  "type": "web",
+  "icon": "⚛️",
+  "category": "education",
+  
+  "web": {
+    "enabled": true,
+    "entry": "start.sh",
+    "port": 4000,
+    "framework": "pending",
+    "command": ["./start.sh"]
+  },
+  
+  "desktop": {
+    "enabled": false
+  },
+  
+  "tags": ["physics", "education", "science"]
+}
