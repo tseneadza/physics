@@ -156,10 +156,15 @@
   }
 
   function newRefractionProblem(level) {
-    const n1 = isIntermediate(level) ? randStep(1, 1.6, 0.1) : 1;
-    const n2 = isIntermediate(level) ? randStep(1.2, 2.2, 0.1) : 1.5;
-    const theta1 = isIntermediate(level) ? randInt(20, 70) : randInt(30, 55);
-    const expected = (Math.asin((n1 / n2) * Math.sin(toRad(theta1))) * 180) / Math.PI;
+    let n1, n2, theta1, sinTheta2;
+    // Regenerate parameters if total internal reflection would occur
+    do {
+      n1 = isIntermediate(level) ? randStep(1, 1.6, 0.1) : 1;
+      n2 = isIntermediate(level) ? randStep(1.2, 2.2, 0.1) : 1.5;
+      theta1 = isIntermediate(level) ? randInt(20, 70) : randInt(30, 55);
+      sinTheta2 = (n1 / n2) * Math.sin(toRad(theta1));
+    } while (sinTheta2 > 1);
+    const expected = (Math.asin(sinTheta2) * 180) / Math.PI;
     return {
       n1,
       n2,
@@ -561,7 +566,7 @@
     function check() {
       if (!current) return;
       const user = Number(answerEl.value);
-      if (!Number.isFinite(user) || user < 0) {
+      if (!Number.isFinite(user)) {
         feedbackEl.textContent = "Enter a numeric answer.";
         return;
       }

@@ -136,6 +136,7 @@ async function initTopicLearning() {
     });
   });
   levelSelect.addEventListener("change", () => {
+    syncProblemContext();
     loadLesson().catch((err) => {
       text.textContent = `Failed to load lesson: ${err.message}`;
     });
