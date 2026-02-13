@@ -1,28 +1,7 @@
 (function () {
-  const MODES = {
-    PROJECTILE: "projectile",
-    ELECTRIC_FIELD: "electric_field",
-    CIRCUITS: "circuits",
-    WAVE: "wave",
-    THERMO: "thermo",
-    OPTICS: "optics",
-  };
-
-  function toRad(deg) {
-    return (deg * Math.PI) / 180;
-  }
-
-  function modeFromContext(discipline, topic) {
-    if (discipline === "Mechanics" || topic === "Kinematics") return MODES.PROJECTILE;
-    if (discipline === "Electricity and Magnetism") {
-      if (topic === "DC Circuits") return MODES.CIRCUITS;
-      return MODES.ELECTRIC_FIELD;
-    }
-    if (discipline === "Waves") return MODES.WAVE;
-    if (discipline === "Thermodynamics") return MODES.THERMO;
-    if (discipline === "Optics") return MODES.OPTICS;
-    return MODES.PROJECTILE;
-  }
+  const MODES = window.PhysicsCommon.MODES;
+  const toRad = window.PhysicsCommon.toRad;
+  const modeFromContext = window.PhysicsCommon.modeFromContext;
 
   function newProjectileProblem() {
     const speed = 12 + Math.floor(Math.random() * 14); // 12..25
@@ -195,6 +174,23 @@
     ctx.fillText(`${label}: ${value.toFixed(2)}`, pad, h / 2 - 28);
   }
 
+  function drawEmptyCanvas(canvas, label) {
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    const pad = 20;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "#0f172a";
+    ctx.strokeRect(pad, h / 2 - 20, w - 2 * pad, 40);
+
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "14px Arial";
+    ctx.fillText(`${label}: ?`, pad, h / 2 - 28);
+  }
+
   function getFormulaAidByMode(mode) {
     if (mode === MODES.CIRCUITS) {
       return {
@@ -334,8 +330,18 @@
       if (mode === MODES.PROJECTILE) {
         drawResult(canvas, 0);
       } else {
-        drawValueBar(canvas, "Expected value", current.expected);
+        drawEmptyCanvas(canvas, "Expected value");
       }
+    }
+
+    function getUnitForMode(mode) {
+      if (mode === MODES.PROJECTILE) return "m";
+      if (mode === MODES.ELECTRIC_FIELD) return "N/C";
+      if (mode === MODES.CIRCUITS) return "A";
+      if (mode === MODES.WAVE) return "m";
+      if (mode === MODES.THERMO) return "J";
+      if (mode === MODES.OPTICS) return "cm";
+      return "m";
     }
 
     function check() {
@@ -347,10 +353,11 @@
       }
       const tol = Math.max(0.5, current.expected * 0.05);
       const err = Math.abs(user - current.expected);
+      const unit = getUnitForMode(mode);
       feedbackEl.textContent =
         err <= tol
-          ? `Correct! Your answer is within tolerance (+/-${tol.toFixed(2)} m).`
-          : `Not quite. Expected value is about ${current.expected.toFixed(2)} m.`;
+          ? `Correct! Your answer is within tolerance (+/-${tol.toFixed(2)} ${unit}).`
+          : `Not quite. Expected value is about ${current.expected.toFixed(2)} ${unit}.`;
       stepsEl.textContent = buildSteps(current);
       if (mode === MODES.PROJECTILE) {
         drawResult(canvas, current.expected);

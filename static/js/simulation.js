@@ -1,16 +1,6 @@
 (function () {
-  const MODES = {
-    PROJECTILE: "projectile",
-    ELECTRIC_FIELD: "electric_field",
-    CIRCUITS: "circuits",
-    WAVE: "wave",
-    THERMO: "thermo",
-    OPTICS: "optics",
-  };
-
-  function toRad(deg) {
-    return (deg * Math.PI) / 180;
-  }
+  const MODES = window.PhysicsCommon.MODES;
+  const toRad = window.PhysicsCommon.toRad;
 
   function computeProjectile(speed, angleDeg, gravity) {
     const angle = toRad(angleDeg);
@@ -123,19 +113,7 @@
     });
   }
 
-  function modeFromContext(discipline, topic) {
-    if (discipline === "Mechanics" || topic === "Kinematics") {
-      return MODES.PROJECTILE;
-    }
-    if (discipline === "Electricity and Magnetism") {
-      if (topic === "DC Circuits") return MODES.CIRCUITS;
-      return MODES.ELECTRIC_FIELD;
-    }
-    if (discipline === "Waves") return MODES.WAVE;
-    if (discipline === "Thermodynamics") return MODES.THERMO;
-    if (discipline === "Optics") return MODES.OPTICS;
-    return MODES.PROJECTILE;
-  }
+  const modeFromContext = window.PhysicsCommon.modeFromContext;
 
   function format(value) {
     return Number.isFinite(value) ? value.toFixed(2) : "-";
@@ -144,8 +122,16 @@
   function setNumberInput(input, value, step, min, max) {
     input.value = value;
     input.step = step;
-    if (min !== undefined) input.min = String(min);
-    if (max !== undefined) input.max = String(max);
+    if (min !== undefined) {
+      input.min = String(min);
+    } else {
+      input.removeAttribute("min");
+    }
+    if (max !== undefined) {
+      input.max = String(max);
+    } else {
+      input.removeAttribute("max");
+    }
   }
 
   function initSimulation(config) {
