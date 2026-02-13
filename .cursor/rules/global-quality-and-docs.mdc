@@ -1,0 +1,32 @@
+---
+description: Enforce implementation quality and documentation updates
+alwaysApply: true
+---
+
+# Quality And Documentation Rule
+
+When implementing or changing features:
+
+- Use parallel subagents when available:
+  - One for code quality and best practices.
+  - One for documentation and API contract updates.
+- If subagents are unavailable, continue work directly and note the fallback.
+
+For code changes:
+
+- Prefer small, readable functions and consistent error responses.
+- Validate user input on both backend and frontend paths.
+- Keep API field names stable and verify frontend usage matches backend output.
+- Add lightweight runtime checks for missing DOM elements and invalid values.
+
+For docs changes:
+
+- Update `README.md` when run/setup steps or capabilities change.
+- Maintain endpoint contracts and examples in `docs/API.md`.
+- Document current limitations and next steps briefly.
+
+Before finishing:
+
+- Run smoke checks for changed endpoints/features.
+- Run linter/diagnostics for edited files.
+- Summarize changed files, validation performed, and any residual risks.
