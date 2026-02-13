@@ -15,20 +15,24 @@
 
       <section class="panel">
         <h2>Topic Learning</h2>
-        <div class="controls">
-          <label for="disciplineSelect">Discipline</label>
-          <select id="disciplineSelect"></select>
+        <div class="controls topic-controls">
+          <div class="control-field">
+            <label for="disciplineSelect">Discipline</label>
+            <select id="disciplineSelect"></select>
+          </div>
 
-          <label for="topicSelect">Topic</label>
-          <select id="topicSelect"></select>
+          <div class="control-field">
+            <label for="topicSelect">Topic</label>
+            <select id="topicSelect"></select>
+          </div>
 
-          <label for="levelSelect">Level</label>
-          <select id="levelSelect">
-            <option value="basics">Basics</option>
-            <option value="intermediate">Intermediate</option>
-          </select>
-
-          <button id="loadLessonBtn">Load Lesson</button>
+          <div class="control-field">
+            <label for="levelSelect">Level</label>
+            <select id="levelSelect">
+              <option value="basics">Basics</option>
+              <option value="intermediate">Intermediate</option>
+            </select>
+          </div>
         </div>
 
         <article class="lesson">
@@ -40,6 +44,17 @@
           </div>
           <img id="lessonDiagram" alt="Physics topic diagram" />
         </article>
+      </section>
+
+      <section class="panel">
+        <h2>Learning Progress</h2>
+        <div class="controls progress-controls">
+          <div id="progressSummary">No progress yet.</div>
+          <div class="control-actions">
+            <button id="resetProgressBtn" type="button">Reset Progress</button>
+          </div>
+        </div>
+        <div id="progressList"></div>
       </section>
 
       <section class="panel">
@@ -107,6 +122,7 @@
     <script src="/static/js/physics_common.js"></script>
     <script src="/static/js/simulation.js"></script>
     <script src="/static/js/problem_solver.js"></script>
+    <script src="/static/js/progress_tracker.js"></script>
     <script src="/static/js/main.js"></script>
   </body>
   </html>

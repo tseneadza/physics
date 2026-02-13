@@ -117,3 +117,6 @@ curl -s "http://127.0.0.1:4000/api/formulas?discipline=Mechanics&topic=Kinematic
 ## Notes
 - API data is in-memory and resets when the server restarts.
 - Parameter values are case-sensitive and should match available discipline/topic names from `/api/disciplines`.
+- Difficulty tiers and learning progress are currently handled client-side:
+  - Difficulty uses the UI level selector (`basics`/`intermediate`) and does not require a separate API endpoint.
+  - Progress tracking uses browser localStorage and is not persisted on the backend.

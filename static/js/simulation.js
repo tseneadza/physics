@@ -116,7 +116,10 @@
   const modeFromContext = window.PhysicsCommon.modeFromContext;
 
   function format(value) {
-    return Number.isFinite(value) ? value.toFixed(2) : "-";
+    if (!Number.isFinite(value)) return "-";
+    const abs = Math.abs(value);
+    if (abs > 0 && abs < 0.01) return value.toFixed(4);
+    return value.toFixed(2);
   }
 
   function setNumberInput(input, value, step, min, max) {
@@ -197,6 +200,17 @@
         setNumberInput(param3Input, 9.81, "0.1", 0.1, undefined);
         return;
       }
+      if (mode === MODES.NEWTON_FORCE) {
+        heading.textContent = "Interactive Simulation (Newton's Laws)";
+        modeDescription.textContent = "Force simulation: explore acceleration and motion from net force and mass.";
+        param1Label.textContent = "Mass m (kg)";
+        param2Label.textContent = "Net Force F (N)";
+        param3Label.textContent = "Time t (s)";
+        setNumberInput(param1Input, 2, "0.1", 0.1, undefined);
+        setNumberInput(param2Input, 10, "0.1", 0.1, undefined);
+        setNumberInput(param3Input, 5, "0.1", 0.1, undefined);
+        return;
+      }
       if (mode === MODES.ELECTRIC_FIELD) {
         heading.textContent = "Interactive Simulation (Electric Field)";
         modeDescription.textContent = "Electric fields simulation: observe how field strength changes with distance.";
@@ -230,6 +244,17 @@
         setNumberInput(param3Input, 20, "0.1", 0.1, undefined);
         return;
       }
+      if (mode === MODES.THERMO_GAS) {
+        heading.textContent = "Interactive Simulation (Ideal Gas Basics)";
+        modeDescription.textContent = "Ideal gas simulation: estimate moles and state relation using PV = nRT.";
+        param1Label.textContent = "Pressure P (kPa)";
+        param2Label.textContent = "Volume V (L)";
+        param3Label.textContent = "Temperature T (K)";
+        setNumberInput(param1Input, 101.3, "0.1", 1, undefined);
+        setNumberInput(param2Input, 22.4, "0.1", 0.1, undefined);
+        setNumberInput(param3Input, 273.15, "0.1", 1, undefined);
+        return;
+      }
       if (mode === MODES.OPTICS) {
         heading.textContent = "Interactive Simulation (Optics)";
         modeDescription.textContent = "Optics simulation: compute image distance and magnification for a thin lens.";
@@ -239,6 +264,28 @@
         setNumberInput(param1Input, 10, "0.1", 0.1, undefined);
         setNumberInput(param2Input, 30, "0.1", 0.2, undefined);
         setNumberInput(param3Input, 5, "0.1", 0.1, undefined);
+        return;
+      }
+      if (mode === MODES.OPTICS_REFRACTION) {
+        heading.textContent = "Interactive Simulation (Reflection and Refraction)";
+        modeDescription.textContent = "Snell's law simulation: change media and incidence angle to see refraction.";
+        param1Label.textContent = "n1 (incident medium)";
+        param2Label.textContent = "n2 (transmission medium)";
+        param3Label.textContent = "Incident angle theta1 (deg)";
+        setNumberInput(param1Input, 1, "0.01", 1, undefined);
+        setNumberInput(param2Input, 1.5, "0.01", 1, undefined);
+        setNumberInput(param3Input, 35, "0.1", 0.1, 89.9);
+        return;
+      }
+      if (mode === MODES.SOUND) {
+        heading.textContent = "Interactive Simulation (Sound)";
+        modeDescription.textContent = "Sound simulation: relate frequency, wavelength, and propagation speed.";
+        param1Label.textContent = "Frequency f (Hz)";
+        param2Label.textContent = "Speed v (m/s)";
+        param3Label.textContent = "Amplitude A";
+        setNumberInput(param1Input, 440, "1", 1, undefined);
+        setNumberInput(param2Input, 343, "0.1", 1, undefined);
+        setNumberInput(param3Input, 1, "0.1", 0.1, undefined);
         return;
       }
       heading.textContent = "Interactive Simulation (Waves)";
@@ -270,6 +317,29 @@
           `${format(result.range)} m`,
           "Max height",
           `${format(result.maxHeight)} m`
+        );
+        return;
+      }
+      if (mode === MODES.NEWTON_FORCE) {
+        const mass = Number.isFinite(raw1) ? Math.max(0.1, raw1) : 1;
+        const force = Number.isFinite(raw2) ? Math.max(0.1, raw2) : 1;
+        const time = Number.isFinite(raw3) ? Math.max(0.1, raw3) : 1;
+        const acceleration = force / mass;
+        const finalVelocity = acceleration * time;
+        const displacement = 0.5 * acceleration * time * time;
+        const points = [];
+        for (let i = 0; i <= 80; i += 1) {
+          const t = (i / 80) * time;
+          points.push({ x: t, y: acceleration * t });
+        }
+        drawCurve(canvas, points, time, Math.max(finalVelocity * 1.2, 1), "#2563eb");
+        setMetrics(
+          "Acceleration",
+          `${format(acceleration)} m/s^2`,
+          "Final velocity",
+          `${format(finalVelocity)} m/s`,
+          "Displacement",
+          `${format(displacement)} m`
         );
         return;
       }
@@ -348,6 +418,34 @@
         );
         return;
       }
+      if (mode === MODES.THERMO_GAS) {
+        const pressureKpa = Number.isFinite(raw1) ? Math.max(1, raw1) : 101.3;
+        const volumeL = Number.isFinite(raw2) ? Math.max(0.1, raw2) : 22.4;
+        const tempK = Number.isFinite(raw3) ? Math.max(1, raw3) : 273.15;
+        const p = pressureKpa * 1000;
+        const v = volumeL / 1000;
+        const R = 8.314;
+        const moles = (p * v) / (R * tempK);
+        const pressureFromState = (moles * R * tempK) / v / 1000;
+        const points = [];
+        const maxV = Math.max(volumeL * 1.8, 1);
+        for (let i = 0; i <= 80; i += 1) {
+          const vLit = 0.1 + (i / 80) * (maxV - 0.1);
+          const vM3 = vLit / 1000;
+          const pKpa = (moles * R * tempK) / vM3 / 1000;
+          points.push({ x: vLit, y: pKpa });
+        }
+        drawCurve(canvas, points, maxV, Math.max(...points.map((pt) => pt.y)), "#f97316");
+        setMetrics(
+          "Estimated moles n",
+          `${format(moles)} mol`,
+          "State pressure",
+          `${format(pressureFromState)} kPa`,
+          "PV product",
+          `${format(pressureKpa * volumeL)} kPa*L`
+        );
+        return;
+      }
       if (mode === MODES.OPTICS) {
         const f = Number.isFinite(raw1) ? Math.max(0.1, raw1) : 10;
         const doDist = Number.isFinite(raw2) ? Math.max(0.2, raw2) : 30;
@@ -396,6 +494,95 @@
           Number.isFinite(magnification) ? `${format(magnification)}x` : "Infinity",
           "Image height hi",
           Number.isFinite(hi) ? `${format(hi)} cm` : "Infinity"
+        );
+        return;
+      }
+      if (mode === MODES.OPTICS_REFRACTION) {
+        const n1 = Number.isFinite(raw1) ? Math.max(1, raw1) : 1;
+        const n2 = Number.isFinite(raw2) ? Math.max(1, raw2) : 1.5;
+        const theta1Deg = Number.isFinite(raw3) ? Math.min(89.9, Math.max(0.1, raw3)) : 35;
+        const theta1 = toRad(theta1Deg);
+        const sinTheta2 = (n1 / n2) * Math.sin(theta1);
+        const tir = Math.abs(sinTheta2) > 1;
+        const theta2Deg = tir ? NaN : (Math.asin(sinTheta2) * 180) / Math.PI;
+
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(20, cy);
+        ctx.lineTo(w - 20, cy);
+        ctx.moveTo(cx, 20);
+        ctx.lineTo(cx, h - 20);
+        ctx.stroke();
+
+        const rayLen = 160;
+        const inX = cx - rayLen * Math.sin(theta1);
+        const inY = cy - rayLen * Math.cos(theta1);
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(inX, inY);
+        ctx.lineTo(cx, cy);
+        ctx.stroke();
+
+        if (tir) {
+          const reflX = cx + rayLen * Math.sin(theta1);
+          const reflY = cy - rayLen * Math.cos(theta1);
+          ctx.strokeStyle = "#dc2626";
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(reflX, reflY);
+          ctx.stroke();
+        } else {
+          const outX = cx + rayLen * Math.sin(toRad(theta2Deg));
+          const outY = cy + rayLen * Math.cos(toRad(theta2Deg));
+          ctx.strokeStyle = "#16a34a";
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(outX, outY);
+          ctx.stroke();
+        }
+
+        setMetrics(
+          "Incident angle",
+          `${format(theta1Deg)} deg`,
+          "Refracted angle",
+          tir ? "TIR" : `${format(theta2Deg)} deg`,
+          "n1/n2 ratio",
+          `${format(n1 / n2)}`
+        );
+        return;
+      }
+      if (mode === MODES.SOUND) {
+        const frequency = Number.isFinite(raw1) ? Math.max(1, raw1) : 440;
+        const speed = Number.isFinite(raw2) ? Math.max(1, raw2) : 343;
+        const amplitude = Number.isFinite(raw3) ? Math.max(0.1, raw3) : 1;
+        const wavelength = speed / frequency;
+        const period = 1 / frequency;
+        const intensityProxy = amplitude * amplitude * frequency * frequency;
+        const points = [];
+        const maxX = Math.max(wavelength * 4, 2);
+        for (let i = 0; i <= 200; i += 1) {
+          const x = (i / 200) * maxX;
+          const y = amplitude * Math.sin((2 * Math.PI * x) / wavelength);
+          points.push({ x, y: y + amplitude });
+        }
+        drawCurve(canvas, points, maxX, amplitude * 2, "#0891b2");
+        setMetrics(
+          "Wavelength",
+          `${format(wavelength)} m`,
+          "Period",
+          `${format(period)} s`,
+          "Intensity proxy",
+          `${format(intensityProxy)}`
         );
         return;
       }

@@ -28,5 +28,7 @@ For docs changes:
 Before finishing:
 
 - Run smoke checks for changed endpoints/features.
+- If `templates/*` or `static/*` changed, restart the app server and verify served HTML/CSS/JS with `curl` before reporting completion.
+- If UI changes are not visible, explicitly remind to hard refresh the browser (`Cmd+Shift+R` on macOS).
 - Run linter/diagnostics for edited files.
 - Summarize changed files, validation performed, and any residual risks.

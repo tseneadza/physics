@@ -5,8 +5,43 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f8fafc;
+  background-color: #0b1020;
   color: #0f172a;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-image 240ms ease;
+}
+
+body[data-discipline="mechanics"] {
+  background-image:
+    linear-gradient(rgba(10, 14, 30, 0.55), rgba(10, 14, 30, 0.55)),
+    url("/static/images/mechanics-bg.svg");
+}
+
+body[data-discipline="electricity"] {
+  background-image:
+    linear-gradient(rgba(10, 14, 30, 0.48), rgba(10, 14, 30, 0.5)),
+    url("/static/images/electricity-bg.png");
+}
+
+body[data-discipline="waves"] {
+  background-image:
+    linear-gradient(rgba(8, 18, 28, 0.52), rgba(8, 18, 28, 0.52)),
+    url("/static/images/waves-bg.png");
+}
+
+body[data-discipline="thermo"] {
+  background-image:
+    linear-gradient(rgba(28, 10, 10, 0.5), rgba(28, 10, 10, 0.5)),
+    url("/static/images/thermo-bg.png");
+}
+
+body[data-discipline="optics"] {
+  background-image:
+    linear-gradient(rgba(10, 14, 30, 0.5), rgba(10, 14, 30, 0.5)),
+    url("/static/images/optics-bg.png");
 }
 
 .container {
@@ -17,14 +52,23 @@ body {
 
 header h1 {
   margin-bottom: 0.4rem;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+header p {
+  color: #e2e8f0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .panel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .controls {
@@ -40,7 +84,17 @@ header h1 {
   align-items: stretch;
 }
 
+.topic-controls {
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
 .problem-controls {
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+.progress-controls {
   grid-template-columns: 1fr;
   align-items: stretch;
 }
@@ -160,6 +214,32 @@ canvas {
   border-radius: 6px;
   padding: 0.55rem 0.65rem;
   margin: 0.2rem 0 0.5rem;
+}
+
+#progressSummary {
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.progress-topic-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+.progress-topic-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  background: #ffffff;
+}
+
+.progress-status {
+  font-size: 0.85rem;
+  color: #334155;
 }
 
 @media (max-width: 640px) {

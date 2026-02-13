@@ -29,10 +29,18 @@ python app.py
 
 ## V1 Features
 - Topic learning with levels (`Basics`, `Intermediate`) across core disciplines
+- Topic content auto-loads when discipline/topic/level changes (no manual lesson-load button)
 - Generated visual diagrams for selected lessons
 - Formula cheat-sheet panel for each selected lesson topic (equations, units, usage notes, rearrangements)
-- Discipline/topic-aware simulations (projectile, electric fields, DC circuits, waves, thermodynamics, optics)
-- Discipline/topic-aware problem-solving flow with hint toggle, answer checking, step-by-step solution, result visual, and formula reference
+- Discipline/topic-aware simulations:
+  - Mechanics: Kinematics, Newton's Laws
+  - Electricity and Magnetism: Electric Fields, DC Circuits
+  - Waves: Wave Properties, Sound
+  - Thermodynamics: Temperature and Heat, Ideal Gas Basics
+  - Optics: Lenses, Reflection and Refraction
+- Discipline/topic-aware problem-solving flow with hint toggle, answer checking, step-by-step solution, unit-aware results/feedback, and formula reference
+- Difficulty-aware problem generation and tolerance using the level selector (`Basics`, `Intermediate`)
+- Client-side learning progress tracker (localStorage) with per-topic viewed/practiced status and reset control
 
 ## Hub Integration
 This app is discoverable by the Codehome Hub and Project Manager applications.
@@ -42,6 +50,6 @@ See `docs/API.md` for endpoint contracts and curl examples.
 
 ## Limitations (V1)
 - Content is in-memory (no database persistence)
-- One interactive simulation and one numeric problem flow are currently implemented
-- No authentication or progress tracking yet
+- Progress tracking is local-only in the browser (localStorage), not synced across devices
+- No authentication or user accounts yet
 

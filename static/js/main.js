@@ -27,6 +27,20 @@ function setOptions(select, items) {
 
 let simulationController = null;
 let problemController = null;
+let progressTracker = null;
+
+function disciplineKey(name) {
+  if (name === "Electricity and Magnetism") return "electricity";
+  if (name === "Mechanics") return "mechanics";
+  if (name === "Waves") return "waves";
+  if (name === "Thermodynamics") return "thermo";
+  if (name === "Optics") return "optics";
+  return "mechanics";
+}
+
+function applyDisciplineBackground(disciplineName) {
+  document.body.dataset.discipline = disciplineKey(disciplineName);
+}
 
 function renderFormulaCards(container, formulas) {
   if (!container) return;
@@ -58,12 +72,11 @@ async function initTopicLearning() {
   const disciplineSelect = document.getElementById("disciplineSelect");
   const topicSelect = document.getElementById("topicSelect");
   const levelSelect = document.getElementById("levelSelect");
-  const loadBtn = document.getElementById("loadLessonBtn");
   const heading = document.getElementById("lessonHeading");
   const text = document.getElementById("lessonText");
   const diagram = document.getElementById("lessonDiagram");
   const lessonFormulaList = document.getElementById("lessonFormulaList");
-  if (!disciplineSelect || !topicSelect || !levelSelect || !loadBtn || !heading || !text || !diagram || !lessonFormulaList) {
+  if (!disciplineSelect || !topicSelect || !levelSelect || !heading || !text || !diagram || !lessonFormulaList) {
     throw new Error("Topic learning UI is missing required elements.");
   }
 
@@ -75,6 +88,9 @@ async function initTopicLearning() {
   }
 
   const byName = new Map(disciplines.map((d) => [d.name, d.topics]));
+  if (progressTracker && typeof progressTracker.setCatalog === "function") {
+    progressTracker.setCatalog(disciplines);
+  }
   setOptions(
     disciplineSelect,
     disciplines.map((d) => d.name)
@@ -93,21 +109,36 @@ async function initTopicLearning() {
     problemController.setContext({
       discipline: disciplineSelect.value,
       topic: topicSelect.value,
+      level: levelSelect.value,
     });
   }
 
   function updateTopics() {
     const topics = byName.get(disciplineSelect.value) || [];
     setOptions(topicSelect, topics);
-    loadBtn.disabled = topics.length === 0;
+    applyDisciplineBackground(disciplineSelect.value);
     syncSimulationContext();
     syncProblemContext();
+    if (progressTracker && typeof progressTracker.render === "function") {
+      progressTracker.render(disciplineSelect.value);
+    }
+    loadLesson().catch((err) => {
+      text.textContent = `Failed to load lesson: ${err.message}`;
+    });
   }
 
   disciplineSelect.addEventListener("change", updateTopics);
   topicSelect.addEventListener("change", () => {
     syncSimulationContext();
     syncProblemContext();
+    loadLesson().catch((err) => {
+      text.textContent = `Failed to load lesson: ${err.message}`;
+    });
+  });
+  levelSelect.addEventListener("change", () => {
+    loadLesson().catch((err) => {
+      text.textContent = `Failed to load lesson: ${err.message}`;
+    });
   });
   updateTopics();
 
@@ -127,15 +158,18 @@ async function initTopicLearning() {
     diagram.alt = `${lesson.discipline} ${lesson.topic} diagram`;
     diagram.src = `/api/diagram?discipline=${discipline}&topic=${topic}&t=${Date.now()}`;
     renderFormulaCards(lessonFormulaList, formulaData.formulas || []);
+    if (progressTracker && typeof progressTracker.markViewed === "function") {
+      progressTracker.markViewed(lesson.discipline, lesson.topic);
+    }
   }
 
-  loadBtn.addEventListener("click", () => {
-    loadLesson().catch((err) => {
-      text.textContent = `Failed to load lesson: ${err.message}`;
-    });
-  });
-
   await loadLesson();
+
+  window.addEventListener("physics:problemChecked", () => {
+    if (progressTracker && typeof progressTracker.markPracticed === "function") {
+      progressTracker.markPracticed(disciplineSelect.value, topicSelect.value);
+    }
+  });
 }
 
 function initModules() {
@@ -158,6 +192,14 @@ function initModules() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (typeof window.createProgressTracker === "function") {
+    progressTracker = window.createProgressTracker({
+      summaryId: "progressSummary",
+      listId: "progressList",
+      resetButtonId: "resetProgressBtn",
+    });
+  }
+
   try {
     simulationController = window.initSimulation({
       headingId: "simHeading",
