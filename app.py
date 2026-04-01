@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from typing import Optional
 
@@ -405,4 +406,5 @@ def formulas():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000, debug=False)
+    port = int(os.environ.get("PORT", "4000"))
+    app.run(host="0.0.0.0", port=port, debug=False)

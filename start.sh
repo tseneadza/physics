@@ -1,17 +1,26 @@
 #!/bin/bash
-# Physics App Launcher
-# Port: 4000
-
+# Physics App Launcher — uses Hub-provided PORT when started from Codehome Hub.
 set -e
 
-echo "Starting Physics app on port 4000..."
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$APP_DIR"
 
-if [ ! -d ".venv" ]; then
+PY="$APP_DIR/.venv/bin/python3"
+if [ ! -x "$PY" ]; then
   echo "Creating Python virtual environment..."
   python3 -m venv .venv
+  PY="$APP_DIR/.venv/bin/python3"
 fi
 
-source .venv/bin/activate
-python -m pip install --disable-pip-version-check -r requirements.txt
+# Do not use `source .venv/bin/activate`: if the project was moved, activate may still
+# point VIRTUAL_ENV at an old path and break PATH (python: command not found).
 
-python app.py
+DEPS_STAMP="$APP_DIR/.venv/.hub_deps_installed"
+if [ ! -f "$DEPS_STAMP" ] || [ "$APP_DIR/requirements.txt" -nt "$DEPS_STAMP" ]; then
+  echo "Installing Python dependencies..."
+  "$PY" -m pip install --disable-pip-version-check -r "$APP_DIR/requirements.txt"
+  touch "$DEPS_STAMP"
+fi
+
+echo "Starting Physics app (PORT=${PORT:-4000})..."
+exec "$PY" "$APP_DIR/app.py"
