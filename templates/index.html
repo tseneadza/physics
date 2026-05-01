@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Physics Basics</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Physics Basics Explorer</h1>
+        <p>Choose a discipline, learn a topic, run a simulation, and solve a problem.</p>
+      </header>
+
+      <section class="panel">
+        <h2>Topic Learning</h2>
+        <div class="controls topic-controls">
+          <div class="control-field">
+            <label for="disciplineSelect">Discipline</label>
+            <select id="disciplineSelect"></select>
+          </div>
+
+          <div class="control-field">
+            <label for="topicSelect">Topic</label>
+            <select id="topicSelect"></select>
+          </div>
+
+          <div class="control-field">
+            <label for="levelSelect">Level</label>
+            <select id="levelSelect">
+              <option value="basics">Basics</option>
+              <option value="intermediate">Intermediate</option>
+            </select>
+          </div>
+        </div>
+
+        <article class="lesson">
+          <h3 id="lessonHeading">Lesson</h3>
+          <p id="lessonText">Select a discipline, topic, and level to begin.</p>
+          <div class="formula-aid">
+            <h4>Formula Aid</h4>
+            <div id="lessonFormulaList">Select a topic to view related formulas.</div>
+          </div>
+          <img id="lessonDiagram" alt="Physics topic diagram" />
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Learning Progress</h2>
+        <div class="controls progress-controls">
+          <div id="progressSummary">No progress yet.</div>
+          <div class="control-actions">
+            <button id="resetProgressBtn" type="button">Reset Progress</button>
+          </div>
+        </div>
+        <div id="progressList"></div>
+      </section>
+
+      <section class="panel">
+        <h2 id="simHeading">Interactive Simulation</h2>
+        <p id="simModeDescription">Simulation mode updates based on selected discipline/topic.</p>
+        <div id="simulationRoot">
+          <div class="controls simulation-controls">
+            <div class="control-field">
+              <label id="simParam1Label" for="simParam1">Parameter 1</label>
+              <input id="simParam1" type="number" step="0.1" value="20" />
+            </div>
+
+            <div class="control-field">
+              <label id="simParam2Label" for="simParam2">Parameter 2</label>
+              <input id="simParam2" type="number" step="0.1" value="45" />
+            </div>
+
+            <div class="control-field">
+              <label id="simParam3Label" for="simParam3">Parameter 3</label>
+              <input id="simParam3" type="number" step="0.1" value="9.81" />
+            </div>
+
+            <div class="control-actions">
+              <button id="simRunBtn">Run Simulation</button>
+            </div>
+          </div>
+
+          <div class="metrics" id="simMetrics" role="status" aria-live="polite">
+            <div><span id="simMetric1Label">Metric 1:</span> <span id="simMetric1">-</span></div>
+            <div><span id="simMetric2Label">Metric 2:</span> <span id="simMetric2">-</span></div>
+            <div><span id="simMetric3Label">Metric 3:</span> <span id="simMetric3">-</span></div>
+          </div>
+
+          <canvas id="simCanvas" width="680" height="300"></canvas>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Problem Solving</h2>
+        <div id="problemRoot">
+          <p id="problemStatement"></p>
+          <div class="formula-aid">
+            <h4>Formula Aid (Problem)</h4>
+            <div id="problemFormulaAid"></div>
+          </div>
+          <div class="controls problem-controls">
+            <div class="control-field">
+              <label for="problemAnswer">Your answer</label>
+              <input id="problemAnswer" type="number" step="0.01" />
+            </div>
+            <div class="control-actions control-actions--multi">
+              <button id="checkProblemBtn">Check Answer</button>
+              <button id="newProblemBtn">New Problem</button>
+              <button id="toggleHintBtn" type="button">Show Hint</button>
+            </div>
+          </div>
+          <p id="problemHint" class="hint-text" hidden aria-live="polite"></p>
+          <p id="problemFeedback" role="status" aria-live="polite"></p>
+          <pre id="problemSteps"></pre>
+          <canvas id="problemCanvas" width="680" height="260"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/js/physics_common.js"></script>
+    <script src="/static/js/simulation.js"></script>
+    <script src="/static/js/problem_solver.js"></script>
+    <script src="/static/js/progress_tracker.js"></script>
+    <script src="/static/js/main.js"></script>
+  </body>
+  </html>

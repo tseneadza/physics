@@ -1,7 +1,7 @@
 {
   "id": "physics",
   "name": "Physics",
-  "description": "Physics application - pending PRD specifications",
+  "description": "Interactive physics basics app with lessons, simulations, and problem solving",
   "version": "0.1.0",
   "type": "web",
   "icon": "⚛️",
@@ -11,7 +11,7 @@
     "enabled": true,
     "entry": "start.sh",
     "port": 4000,
-    "framework": "pending",
+    "framework": "flask",
     "command": ["./start.sh"]
   },
   
@@ -19,5 +19,5 @@
     "enabled": false
   },
   
-  "tags": ["physics", "education", "science"]
+  "tags": ["physics", "education", "science", "simulation", "learning"]
 }
